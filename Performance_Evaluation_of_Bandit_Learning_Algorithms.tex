@@ -1,0 +1,189 @@
+\documentclass[11pt]{article}
+\usepackage{titlesec}
+
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\centering\Large\bfseries} % Style: centered, large font, bold
+  {}                          % No section number
+  {0em}                       % Spacing between number and title
+  {}                          % Title content (unchanged)
+
+\titleformat{\subsection}
+  {\normalfont\Large\bfseries}   % Formatting style: font, size, bold, etc.
+  {}                             % Empty to suppress numbering
+  {0em}                          % Spacing between label and title (ignored here)
+  {}                             % Code before the title
+
+\renewcommand{\abstractname}{\Large Abstract} % Change title size (if required)
+\renewenvironment{abstract}
+  {\begin{center}\bfseries\Large Abstract\vspace{1em}\end{center}%
+   \normalsize} % Adjust text size here
+  {}
+
+\usepackage{amsmath, amssymb}
+\usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{algorithm}
+
+\usepackage{algpseudocode}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usepackage{subfigure}
+
+\usepackage{natbib}  % For bibliography
+\usepackage{hyperref}  % For clickable links
+
+\usepackage{indentfirst}
+
+%
+% Basic Document Settings
+%  
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\usepackage{listings}
+\lstset{
+  language=Python,                   % Set programming language
+  keywordstyle=\bfseries\color{blue},% Bold keywords in blue
+  stringstyle=\color{teal},          % Strings in teal
+  commentstyle=\itshape\color{red}, % Italicize comments in gray
+  frame=lines,                       % Add lines at the top and bottom
+  rulecolor=\color{gray!30},         % Light gray for the frame
+  tabsize=4,                         % Set tab size to 4 spaces
+  captionpos=b,                      % Place caption below the code
+  emphstyle=\bfseries\color{purple}, % Highlight emphasized text
+  escapeinside={(*@}{@*)},           % Allows for LaTeX inside code
+  extendedchars=true                 % Support extended characters
+}
+
+
+
+% headers, footers, titles
+\newcommand{\CourseName}{SI140A Probability and Statistics Final Project}
+\newcommand{\DueDate}{2025/1/12 10:59pm}
+
+
+\title{
+    \vspace{100pt}
+    \bigskip
+    \textbf{\CourseName:} \\
+    \textbf{Performance Evaluation of Bandit Learning Algorithms} \\
+    \bigskip
+}
+\author{Jingran Fan \and Anrui Wang \and Zhao Lu}
+\bigskip
+\date{Due date: \DueDate}
+
+\begin{document}
+\setlength{\parindent}{2em}
+
+\maketitle
+
+\newpage
+
+\begin{abstract}
+
+Multi-armed bandit problems are fundamental models in sequential decision-making under uncertainty, wherein an agent must choose from several options (arms) over repeated trials to maximize cumulative rewards. These problems capture the delicate balance between exploration—seeking information about less-known options—and exploitation—leveraging current knowledge to select the best option. Classical bandit learning algorithms, such as 
+$\epsilon$-greedy, Upper Confidence Bound (UCB), and Thompson Sampling (TS), have been extensively studied and form the cornerstone of modern reinforcement learning techniques. More recently, Bayesian approaches that incorporate prior beliefs and update them with observed data have gained traction, offering theoretical elegance and robust performance in a variety of settings.
+
+This project focuses on evaluating the performance of well-known bandit algorithms through numerical experiments. In Part I, we consider classical bandit algorithms operating on Bernoulli arms with parameters provided by an oracle. Although the oracle’s parameters and optimal attainable reward (the “oracle value”) are unknown to the algorithms, they provide a ground truth reference for performance comparison. We implement and benchmark 
+$\epsilon$-greedy (with various $\epsilon$-values), UCB (with different confidence scales), and TS (with varying Beta priors) under identical experimental conditions. By analyzing their regret—defined as the gap between the algorithm’s cumulative reward and the oracle value—we investigate how tuning parameters and prior knowledge impacts the exploration-exploitation trade-off.
+
+In the optional Part II, we extend our analysis to a Bayesian bandit setting with discounted rewards, where prior distributions on arm parameters are continuously updated as more data is observed. We examine intuitive heuristics and discuss why these heuristics may fail to achieve optimality. Furthermore, we explore the derivation of optimal policies through recursive equations and investigate practical methods for exact and approximate solutions.
+
+Overall, this project aims to provide a rigorous empirical evaluation of both classical and Bayesian bandit algorithms. By comparing their performance and understanding their underlying trade-offs, we gain deeper insights into bandit learning theory and develop intuition for selecting and designing effective strategies in diverse applications.
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\newpage
+\section{Introduction}
+
+In many real-world scenarios—from online advertising to medical trials—decision-makers must choose actions to maximize cumulative rewards. However, these decisions also provide valuable information that can guide future actions. This creates a fundamental tension between exploiting what we already know to gain immediate benefits and exploring new options to potentially improve future outcomes. This challenge is central to the field of reinforcement learning and is known as the exploration-exploitation trade-off.
+
+A classic illustration is the multi-armed bandit problem. Imagine walking into a casino and facing a slot machine with multiple arms, each offering a different, unknown payoff distribution. Your goal is to pull the arms over a sequence of trials to earn as many rewards as possible. Since you do not know which arm is best, you must try them out (exploration) while continuing to play the arm that seems most promising (exploitation). Crucially, the reward probabilities remain fixed but hidden, and the only way to learn them is by experimenting.
+
+This report examines three classical strategies for solving the multi-armed bandit problem—
+$\epsilon$-greedy, Upper Confidence Bound (UCB), and Thompson Sampling (TS). By comparing their performance, we gain insight into how they balance exploration and exploitation and how well they adapt to uncertain, reward-driven environments.
+
+\newpage
+\section{Part I: Classical Bandit Algorithms}
+\subsection{Problem 1}
+Choose $N = 5000$ and compute the theoretically maximized expectation of aggregate rewards over $N$ time slots. Suppose we have an oracle that provides the parameters of the Bernoulli distributions for three arms as follows:
+\[
+\theta_1 = 0.7, \quad \theta_2 = 0.5, \quad \theta_3 = 0.4.
+\]
+
+We choose the time horizon as \( N = 5000 \) time steps. If we know these parameters beforehand (as the oracle does), the strategy to maximize the expected total reward is to always pull the arm with the highest success probability, which in this case is arm 1 (with \(\theta_1 = 0.7\)).
+
+The expected reward is:
+\[
+\max_{I(t), t = 1, \dots, N} \mathbb{E} \left[ \sum_{t=1}^{N} r_{I(t)} \right] = N \times \theta_1 = 5000 \times 0.7 = 3500.
+\]
+
+Thus, the theoretically maximized expectation is: $\boxed{3500.}$
+
+\newpage
+\subsection{Problem 2}
+
+\subsubsection*{Imports and parameters:}
+\lstinputlisting{code/2_0.py}
+
+\subsubsection*{Implementation of $\epsilon$-greedy algorithm:}
+\lstinputlisting{code/2_1.py}
+
+\subsubsection*{Implementation of UCB algorithm:}
+\lstinputlisting{code/2_2.py}
+
+\subsubsection*{Implementation of Thompson Sampling algorithm:}
+\lstinputlisting{code/2_3.py}
+
+\newpage
+\subsection{Problem 3}
+The results for the three algorithms with various parameters, averaged over 200 trials and 5000 time slots, are presented below:
+
+\subsubsection*{\(\varepsilon\)-Greedy}
+\begin{itemize}
+    \item \(\varepsilon = 0.1\): \textbf{3416.51}
+    \item \(\varepsilon = 0.5\): \textbf{3086.39}
+    \item \(\varepsilon = 0.9\): \textbf{2748.39}
+\end{itemize}
+
+\subsubsection*{Upper Confidence Bound (UCB)}
+\begin{itemize}
+    \item \(c = 1\): \textbf{3411.85}
+    \item \(c = 5\): \textbf{2976.41}
+    \item \(c = 10\): \textbf{2826.26}
+\end{itemize}
+
+\subsubsection*{Thompson Sampling (TS)}
+\begin{itemize}
+    \item \((\alpha_1, \beta_1) = (1,1), (\alpha_2, \beta_2) = (1,1), (\alpha_3, \beta_3) = (1,1)\): \textbf{3477.98}
+    \item \((\alpha_1, \beta_1) = (601,401), (\alpha_2, \beta_2) = (401,601), (\alpha_3, \beta_3) = (2,3)\): \textbf{3492.28}
+\end{itemize}
+
+
+
+\newpage
+\section{Part II: Bayesian Bandit Algorithms}
+
+\bibliographystyle{plainnat}
+\bibliography{references}  % references.bib file
+
+\appendix
+
+\end{document}
