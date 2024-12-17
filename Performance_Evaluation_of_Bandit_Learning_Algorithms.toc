@@ -2,5 +2,6 @@
 \contentsline {section}{\numberline {2}Part I: Classical Bandit Algorithms}{5}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Problem 1}{5}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}Problem 2}{6}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Problem 3}{9}{subsection.2.3}%
-\contentsline {section}{\numberline {3}Part II: Bayesian Bandit Algorithms}{10}{section.3}%
+\contentsline {subsection}{\numberline {2.3}Problem 3}{8}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Problem 4}{9}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Part II: Bayesian Bandit Algorithms}{13}{section.3}%
