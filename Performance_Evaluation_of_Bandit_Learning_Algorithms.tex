@@ -27,7 +27,6 @@
 \usepackage{graphicx}
 \usepackage{tabularx}
 \usepackage{algorithm}
-
 \usepackage{algpseudocode}
 \usepackage{tikz}
 \usepackage{tikz-qtree}
@@ -51,6 +50,7 @@
 
 \linespread{1.1}
 
+\usepackage{setspace}
 \usepackage{listings}
 \lstset{
   language=Python,                   % Set programming language
@@ -347,19 +347,177 @@ The Thompson Sampling algorithm is a Bayesian method that uses prior and posteri
         \item When both \(\alpha_j\) and \(\beta_j\) are small (e.g., \(\alpha_j = 1\), \(\beta_j = 1\)), there is high uncertainty about the reward distribution, encouraging more exploration of different actions.
     \end{itemize}
 
-  \textbf{Balancing Exploration and Exploitation:}
-    \begin{itemize}
-        \item Thompson Sampling uses the Beta distribution to balance exploration and exploitation. Actions with higher posterior probability are more likely to be chosen, but there is still a chance of selecting suboptimal actions (exploration).
-        \item The larger the parameters \(\alpha_j\) and \(\beta_j\), the more confident we are in the reward probability, and the less frequently our belief is updated. This reduces exploration and makes the algorithm focus more on exploitation.
-    \end{itemize}
-    
-  \textbf{Effect of Prior Distribution:}
-    \begin{itemize}
-        \item If we set the prior \(\alpha_j\) and \(\beta_j\) values to be small, the agent explores more, as the uncertainty is high. This might lead to more exploration but fewer immediate rewards.
-        \item If we set the prior to values close to the true expected reward (the oracle value), the algorithm will converge quickly to the best action, leading to better performance.
-    \end{itemize}
-
 \end{enumerate}
+
+
+\newpage
+\subsection{Problem 5}
+The exploration-exploitation trade-off is a central challenge in decision-making processes, particularly in bandit algorithms. It arises when an agent, tasked with maximizing some reward, must decide how much to explore new options (i.e., gather more data) versus exploiting known, high-reward options based on the information it already has.
+
+\textbf{Exploration} involves trying out different actions to gather more information about their outcomes, even if these actions might not seem optimal in the short term. This is essential in the early stages when little is known about the environment.
+
+\textbf{Exploitation} involves choosing the option that has historically provided the highest reward, based on the information the agent has collected. The idea is to maximize immediate rewards using known information.
+
+The trade-off occurs because if the agent always explores, it might fail to capitalize on known high-reward actions. On the other hand, if it always exploits, it risks missing potentially better actions that could be discovered through exploration. Thus, the challenge is in balancing exploration and exploitation over time to optimize overall rewards.
+
+\subsubsection*{Algorithms for Addressing the Exploration-Exploitation Trade-off}
+\begin{enumerate}[1.]
+  \item Epsilon-Greedy Algorithm:
+  The epsilon-greedy algorithm provides a simple way to balance exploration and exploitation:
+  \begin{itemize}
+    \item With probability $\varepsilon$, the agent explores (chooses a random action).
+    \item With probability $1 - \varepsilon$, the agent exploits (chooses the action that has provided the highest reward so far).
+  \end{itemize}
+  The parameter $\varepsilon$ controls the balance between exploration and exploitation. If $\varepsilon$ is high, the agent explores more, while if it is low, it exploits more.
+
+  \textbf{Challenge:} The main limitation of the epsilon-greedy approach is that it uses a fixed $\varepsilon$ throughout the process. Over time, an agent might need to explore less and exploit more, but a fixed $\varepsilon$ might not reflect this need. Adjusting $\varepsilon$ over time (e.g., decreasing $\varepsilon$ as the agent learns more) can improve performance, where more exploration is done at the beginning and exploitation increases as certainty builds.
+  
+  \item Upper Confidence Bound (UCB) Algorithm:
+  The UCB algorithm is based on the idea of balancing exploration and exploitation by considering both the average reward of each action and the uncertainty in the estimate of that reward:
+  \begin{itemize}
+    \item For each arm (action), UCB calculates an upper bound on the potential reward based on how many times the arm has been selected and the variance in its reward.
+    \item The agent then selects the arm with the highest upper bound, balancing the need to exploit the best-known action and explore those with high uncertainty.
+  \end{itemize}
+  The UCB algorithm relies on Hoeffding's inequality to estimate the confidence intervals for each arm's expected reward. The algorithm rewards actions with high uncertainty to ensure that they are explored adequately while still exploiting actions with the highest observed reward.
+  
+  \textbf{Advantage:} As time progresses, the UCB algorithm places more weight on exploitation as uncertainty decreases, gradually refining the agent's knowledge. It inherently balances exploration and exploitation without requiring manual adjustment of the exploration rate.
+
+  \item Thompson Sampling Algorithm
+  Thompson Sampling takes a probabilistic approach to the exploration-exploitation trade-off, using Bayesian inference:
+  \begin{itemize}
+    \item Each arm is modeled by a Beta distribution (since Beta is the conjugate prior for Bernoulli/binomial likelihood), and the parameters of this distribution represent the belief about the arm's reward.
+    \item The agent samples from the Beta distributions and selects the arm with the highest sampled reward.
+    \item After each trial, the agent updates the Beta distribution based on the observed reward, refining its belief about the arm's expected reward.
+  \end{itemize}
+  The agent uses prior knowledge (if available) and updates its beliefs about the rewards using the observed data. In this way, the exploration-exploitation trade-off is handled naturally by the sampling process: arms with higher uncertainty (higher variance in their Beta distribution) are explored more, while arms with lower uncertainty are exploited.
+  
+  \textbf{Advantage:} Thompson Sampling is highly effective and tends to outperform epsilon-greedy and UCB in many scenarios, particularly when the true reward distributions are well-modeled by Beta distributions. The algorithm's probabilistic nature makes it flexible and robust across different situations.
+\end{enumerate}
+Ultimately, the exploration-exploitation trade-off is about finding a strategy that maximizes cumulative rewards over time. While epsilon-greedy is easy to implement and useful for simpler environments, UCB and Thompson Sampling are more sophisticated and provide better performance in many complex scenarios, especially when the agent's knowledge about the environment is continuously evolving.
+
+\newpage
+\subsection{Problem 6}
+\subsubsection*{Problem Settings (Dependent Case)}
+
+\begin{itemize}
+    \item There are 3 arms, each arm $j \in \{1, 2, 3\}$, and each arm $j$ has a reward distribution following a Bernoulli distribution with mean $\theta_j$, i.e., the probability of getting a reward of 1 is $\theta_j$, and the probability of getting a reward of 0 is $1 - \theta_j$.
+    
+    \item In the dependent case, the rewards of the arms are not independent. Specifically, the reward of one arm may influence or be influenced by the rewards of other arms. Assume that the three arms follows linear dependency: 
+    
+    \[ \theta_1 = \alpha \cdot \theta_2 + \beta \cdot \theta_3 + \gamma \]
+    
+    where $\alpha$, $\beta$, and $\gamma$ are constants that define the dependency structure. This could indicate that if arm 2 performs well, arm 1 is more likely to perform well, and vice versa.
+
+    \item In order to make the tests easier, we assume that the equation is \[ \theta_1 = 0.5 \cdot \theta_2 + 0.5 \cdot \theta_3\]
+    This is valid because we ensure that $\theta_1$, $\theta_2$, and $\theta_3$ are all in the range of $[0, 1]$.
+\end{itemize}
+
+\subsubsection*{Algorithm Design}
+In order to obtain a better result, we design four algorithms: \texttt{greedy\_dependence}, \texttt{ucb\_dependence}, \texttt{thompson\_sampling\_dependence}, and \texttt{dependency\_aware\_thompson\_sampling}.
+
+The first three use the same method as before. We just simply make probability of the arm change.
+
+The fourth algorithm initializes Beta distributions for each arm to model reward uncertainties. In each of N rounds, it samples from these distributions and selects the arm with the highest sample. After observing the reward, it updates the chosen arm's Beta parameters. Crucially, if arm 1 (the potentially dependent arm) is selected, it also updates arms 2 and 3's parameters by a fraction $\lambda$ of the reward. This approach allows the algorithm to learn and exploit potential dependencies without prior knowledge of their exact nature. The algorithm balances exploration and exploitation, aiming to maximize total reward over time by adapting its arm selection strategy based on observed outcomes and possible inter-arm dependencies.
+
+\newpage
+\begin{algorithm}
+\caption{Revised Dependency-Aware Thompson Sampling}
+\begin{algorithmic}[1]
+\Require Number of time steps $N$, Initial Beta parameters $\alpha_{\text{init}} = [\alpha_1, \alpha_2, \alpha_3]$, $\beta_{\text{init}} = [\beta_1, \beta_2, \beta_3]$
+\State Initialize $\alpha \gets \alpha_{\text{init}}$
+\State Initialize $\beta \gets \beta_{\text{init}}$
+\State Initialize $ \text{total\_reward} \gets 0 $
+\For{$t = 1$ to $N$}
+    \For{$k = 1$ to $3$}
+        \State Sample $\tilde{\theta}_k \sim \text{Beta}(\alpha_k, \beta_k)$
+    \EndFor
+    \State Select arm $j \gets \arg\max_{k \in \{1,2,3\}} \tilde{\theta}_k$
+    \State Observe reward $r \sim \text{Bernoulli}(\theta_j)$
+    \State $\text{total\_reward} \gets \text{total\_reward} + r$
+    \State $\alpha_j \gets \alpha_j + r$
+    \State $\beta_j \gets \beta_j + (1-r)$
+    \If{$j = 1$}
+        \State $\alpha_2 \gets \alpha_2 + \lambda r$
+        \State $\beta_2 \gets \beta_2 + \lambda(1-r)$
+        \State $\alpha_3 \gets \alpha_3 + \lambda r$
+        \State $\beta_3 \gets \beta_3 + \lambda(1-r)$
+    \EndIf
+\EndFor
+\State \Return $\text{total\_reward}$
+\end{algorithmic}
+\end{algorithm}
+
+
+\newpage
+\subsubsection*{Results and Analysis}
+\setstretch{1}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pics/greedy_dependence.png}
+    \caption{Dependent \(\varepsilon\)-Greedy Performance}
+    \label{fig:dep_greedy}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pics/ucb_dependence.png}
+    \caption{Dependent UCB Performance}
+    \label{fig:dep_ucb}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pics/ts1.png}
+    \caption{Standard Thompson Sampling Performance}
+    \label{fig:dep_ts_standard}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pics/dats1.png}
+    \caption{Initial Analysis of Dependency-Aware Thompson Sampling}
+    \label{fig:dep_dats_initial}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pics/ts_dats2.png}
+    \caption{Comparison of TS and DATS}
+    \label{fig:comparison of TS and DATS}
+\end{figure}
+
+By experimenting, we receive the following results:
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|X|X|c|}
+        \hline
+        \textbf{Algorithm} & \textbf{Best Parameters} & \textbf{Maximum Reward} \\
+        \hline
+        \(\varepsilon\)-Greedy & \(\varepsilon = 0.04\) & 2953.50 \\
+        \hline
+        UCB & \(c = 0.40\) & 2979.58 \\
+        \hline
+        Thompson Sampling & \(\begin{array}{l}
+            \alpha = [201, 1] \\
+            \beta = [601, 3]
+        \end{array}\) & 2996.08 \\
+        \hline
+        Dependency-Aware TS & \(\begin{array}{l}
+            \alpha = [1, 2] \\
+            \beta = [201, 3]
+        \end{array}\) & 3009.12 \\
+        \hline
+    \end{tabularx}
+    \caption{Performance Comparison of Bandit Algorithms}
+    \label{tab:algorithm_comparison}
+\end{table}
+
+\setstretch{1.1}
+According to Table~\ref{tab:algorithm_comparison}, Dependency-Aware Thompson Sampling (DA-TS) achieved the highest maximum reward ($3009.12$) among all algorithms tested. This represents a significant improvement over other algorithms.
+
+The performance analysis reveals distinct patterns in the heatmaps of standard Thompson Sampling (Figure~\ref{fig:dep_ts_standard}) and Dependency-Aware Thompson Sampling (Figure~\ref{fig:dep_dats_initial}). 
+While TS demonstrates better performance with lower \(\alpha\) values, DA-TS performs optimally with higher \(\alpha\) and \(\beta\) values. 
+The comparative analysis (Figure~\ref{fig:comparison of TS and DATS}) demonstrates that DA-TS consistently outperforms standard TS across different parameter settings, indicating its superior ability to adapt to the underlying dependency structure of the rewards.
 
 \newpage
 \section{Part II: Bayesian Bandit Algorithms}
