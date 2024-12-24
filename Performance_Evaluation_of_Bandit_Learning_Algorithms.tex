@@ -398,54 +398,91 @@ Ultimately, the exploration-exploitation trade-off is about finding a strategy t
 \newpage
 \subsection{Problem 6}
 \subsubsection*{Problem Settings (Dependent Case)}
+We examine a multi-armed bandit problem featuring three interdependent arms. This scenario introduces a dependency between the arms, which is set as follows:
+
+After each arm pull, the probabilities are adjusted based on the outcome:
+\begin{itemize}
+    \item \textbf{If a reward is obtained} from pulling arm \(j\) (\(\text{reward} = 1\)):
+    \begin{align*}
+        \theta_j &\leftarrow \max(\theta_j - p, 0) \\
+        \theta_k &\leftarrow \min(\theta_k + \frac{p}{2}, 1) \quad \forall k \neq j
+    \end{align*}
+    
+    \item \textbf{If no reward is obtained} from pulling arm \(j\) (\(\text{reward} = 0\)):
+    \begin{align*}
+        \theta_j &\leftarrow \min(\theta_j + p, 1) \\
+        \theta_k &\leftarrow \max(\theta_k - \frac{p}{2}, 0) \quad \forall k \neq j
+    \end{align*}
+\end{itemize}
+These adjustments ensure that the reward probabilities remain within the valid range \([0, 1]\).
+
+\paragraph{Experimental Setup}
+To evaluate the performance of the algorithms under the independent settings, the following parameters are used:
 
 \begin{itemize}
-    \item There are 3 arms, each arm $j \in \{1, 2, 3\}$, and each arm $j$ has a reward distribution following a Bernoulli distribution with mean $\theta_j$, i.e., the probability of getting a reward of 1 is $\theta_j$, and the probability of getting a reward of 0 is $1 - \theta_j$.
-    
-    \item In the dependent case, the rewards of the arms are not independent. Specifically, the reward of one arm may influence or be influenced by the rewards of other arms. Assume that the three arms follows linear dependency: 
-    
-    \[ \theta_1 = \alpha \cdot \theta_2 + \beta \cdot \theta_3 + \gamma \]
-    
-    where $\alpha$, $\beta$, and $\gamma$ are constants that define the dependency structure. This could indicate that if arm 2 performs well, arm 1 is more likely to perform well, and vice versa.
-
-    \item In order to make the tests easier, we assume that the equation is \[ \theta_1 = 0.5 \cdot \theta_2 + 0.5 \cdot \theta_3\]
-    This is valid because we ensure that $\theta_1$, $\theta_2$, and $\theta_3$ are all in the range of $[0, 1]$.
+    \item \textbf{Number of Time Steps} (\( N \)): 5000.
+    \item \textbf{Number of Trials} (\( \text{repeat\_time} \)): 100.
+    \item \textbf{Adjustment Parameter} (\( p \)): 0.005.
 \end{itemize}
 
+\paragraph{Objective}
+The primary goal is to determine the optimal algorithmic parameters that maximize the average total reward over \( N \) time steps across multiple trials.
+
 \subsubsection*{Algorithm Design}
-In order to obtain a better result, we design four algorithms: \texttt{greedy\_dependence}, \texttt{ucb\_dependence}, \texttt{thompson\_sampling\_dependence}, and \texttt{dependency\_aware\_thompson\_sampling}.
+For the dependent case, we test the three original algorithms on dependent arms. Then, we implement a new algorithm, \texttt{Dependency-Aware Thompson Sampling} (DATS), which adapts the Thompson Sampling algorithm to account for the interdependence between arms to obtain a better result.
+
+\begin{itemize}
+    \item \texttt{greedy\_dependence}
+    \item \texttt{ucb\_dependence}
+    \item \texttt{thompson\_sampling\_dependence}
+    \item \texttt{dependency\_aware\_thompson\_sampling}
+\end{itemize}
 
 The first three use the same method as before. We just simply make probability of the arm change.
 
-The fourth algorithm initializes Beta distributions for each arm to model reward uncertainties. In each of N rounds, it samples from these distributions and selects the arm with the highest sample. After observing the reward, it updates the chosen arm's Beta parameters. Crucially, if arm 1 (the potentially dependent arm) is selected, it also updates arms 2 and 3's parameters by a fraction $\lambda$ of the reward. This approach allows the algorithm to learn and exploit potential dependencies without prior knowledge of their exact nature. The algorithm balances exploration and exploitation, aiming to maximize total reward over time by adapting its arm selection strategy based on observed outcomes and possible inter-arm dependencies.
+The new algorithm we implement, named \texttt{Dependency-Aware Thompson Sampling} operates as follows. For each step, it either explores randomly with probability $p$ or uses Thompson Sampling, drawing from Beta distributions to select an arm. After observing the reward $r \in \{0,1\}$, it updates the chosen arm's Beta distribution parameters ($\alpha_j$ or $\beta_j$) by 1. Crucially, it also partially updates non-chosen arms' parameters by a factor $\gamma$ ($0 \leq \gamma \leq 1$), reflecting potential dependencies between arms. This approach balances exploration and exploitation while accounting for arm correlations, potentially leading to faster learning in environments where arm performances are not entirely independent.
 
-\newpage
 \begin{algorithm}
-\caption{Revised Dependency-Aware Thompson Sampling}
+\caption{Dependency-Aware Thompson Sampling with Partial Updates}
 \begin{algorithmic}[1]
-\Require Number of time steps $N$, Initial Beta parameters $\alpha_{\text{init}} = [\alpha_1, \alpha_2, \alpha_3]$, $\beta_{\text{init}} = [\beta_1, \beta_2, \beta_3]$
-\State Initialize $\alpha \gets \alpha_{\text{init}}$
-\State Initialize $\beta \gets \beta_{\text{init}}$
-\State Initialize $ \text{total\_reward} \gets 0 $
+\State \textbf{Initialize:} $\text{total\_reward} \gets 0$
 \For{$t = 1$ to $N$}
-    \For{$k = 1$ to $3$}
-        \State Sample $\tilde{\theta}_k \sim \text{Beta}(\alpha_k, \beta_k)$
-    \EndFor
-    \State Select arm $j \gets \arg\max_{k \in \{1,2,3\}} \tilde{\theta}_k$
-    \State Observe reward $r \sim \text{Bernoulli}(\theta_j)$
-    \State $\text{total\_reward} \gets \text{total\_reward} + r$
-    \State $\alpha_j \gets \alpha_j + r$
-    \State $\beta_j \gets \beta_j + (1-r)$
-    \If{$j = 1$}
-        \State $\alpha_2 \gets \alpha_2 + \lambda r$
-        \State $\beta_2 \gets \beta_2 + \lambda(1-r)$
-        \State $\alpha_3 \gets \alpha_3 + \lambda r$
-        \State $\beta_3 \gets \beta_3 + \lambda(1-r)$
+    \State Draw $u \sim \text{Uniform}(0, 1)$
+    \If{$u < p$} 
+        \State Select arm $j \gets \text{Randomly pick from } \{1, 2, \ldots, K\}$
+    \Else
+        \For{$k = 1$ to $K$}
+            \State Sample $\tilde{\theta}_k \sim \text{Beta}(\alpha_k, \beta_k)$
+        \EndFor
+        \State Select arm $j \gets \arg\max_{k \in \{1,\ldots,K\}} \tilde{\theta}_k$
     \EndIf
+    
+    \Comment{Observe a reward from the environment}
+    \State $r \sim \text{Bernoulli}(\theta_j)$
+    \State $\text{total\_reward} \gets \text{total\_reward} + r$
+    
+    \Comment{Update the chosen arm}
+    \If{$r = 1$}
+        \State $\alpha_j \gets \alpha_j + 1$
+    \Else
+        \State $\beta_j \gets \beta_j + 1$
+    \EndIf
+    
+    \Comment{Partial / Correlated updates for non-chosen arms}
+    \For{$m = 1$ to $K$}
+        \If{$m \neq j$}
+            \If{$r = 1$}
+                \State $\alpha_m \gets \alpha_m + \gamma$
+            \Else
+                \State $\beta_m \gets \beta_m + \gamma$
+            \EndIf
+        \EndIf
+    \EndFor
 \EndFor
 \State \Return $\text{total\_reward}$
 \end{algorithmic}
 \end{algorithm}
+
 
 
 \newpage
@@ -481,11 +518,19 @@ The fourth algorithm initializes Beta distributions for each arm to model reward
 
 \begin{figure}[H]
     \centering
+    \includegraphics[width=0.8\textwidth]{pics/alpha1.png}    
+    \caption{Comparison of TS and DATS with Different Alpha1}
+    \label{fig:impact of alpha1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
     \includegraphics[width=0.8\textwidth]{pics/ts_dats2.png}
     \caption{Comparison of TS and DATS}
     \label{fig:comparison of TS and DATS}
 \end{figure}
 
+\newpage
 By experimenting, we receive the following results:
 \begin{table}[H]
     \centering
@@ -493,19 +538,19 @@ By experimenting, we receive the following results:
         \hline
         \textbf{Algorithm} & \textbf{Best Parameters} & \textbf{Maximum Reward} \\
         \hline
-        \(\varepsilon\)-Greedy & \(\varepsilon = 0.04\) & 2953.50 \\
+        \(\varepsilon\)-Greedy & \(\varepsilon = 1.00\) & 2670.17 \\
         \hline
-        UCB & \(c = 0.40\) & 2979.58 \\
+        UCB & \(c = 7.20\) & 2663.22 \\
         \hline
         Thompson Sampling & \(\begin{array}{l}
-            \alpha = [201, 1] \\
-            \beta = [601, 3]
-        \end{array}\) & 2996.08 \\
+            \alpha = [1, 2] \\
+            \beta = [1, 1]
+        \end{array}\) & 2634.30 \\
         \hline
         Dependency-Aware TS & \(\begin{array}{l}
-            \alpha = [1, 2] \\
-            \beta = [201, 3]
-        \end{array}\) & 3009.12 \\
+            \alpha = [401, 2] \\
+            \beta = [1, 3]
+        \end{array}\) & 3478.56 \\
         \hline
     \end{tabularx}
     \caption{Performance Comparison of Bandit Algorithms}
@@ -513,11 +558,15 @@ By experimenting, we receive the following results:
 \end{table}
 
 \setstretch{1.1}
-According to Table~\ref{tab:algorithm_comparison}, Dependency-Aware Thompson Sampling (DA-TS) achieved the highest maximum reward ($3009.12$) among all algorithms tested. This represents a significant improvement over other algorithms.
+The experimental results demonstrate the superior performance of the Dependency-Aware Thompson Sampling (DA-TS) algorithm compared to standard Thompson Sampling (TS) and other bandit algorithms. 
 
-The performance analysis reveals distinct patterns in the heatmaps of standard Thompson Sampling (Figure~\ref{fig:dep_ts_standard}) and Dependency-Aware Thompson Sampling (Figure~\ref{fig:dep_dats_initial}). 
-While TS demonstrates better performance with lower \(\alpha\) values, DA-TS performs optimally with higher \(\alpha\) and \(\beta\) values. 
-The comparative analysis (Figure~\ref{fig:comparison of TS and DATS}) demonstrates that DA-TS consistently outperforms standard TS across different parameter settings, indicating its superior ability to adapt to the underlying dependency structure of the rewards.
+As shown in Figure~\ref{fig:dep_ts_standard} and Figure~\ref{fig:dep_dats_initial}, DA-TS achieves higher average total rewards across various \(\alpha\) and \(\beta\) parameter combinations. The difference is more significant when $\beta_1$ is small ($\beta_1 = 1$). Figure~\ref{fig:impact of alpha1} illustrates that DA-TS maintains this performance advantage over TS for different \(\alpha_1\) values, with both algorithms showing relatively stable performance as \(\alpha_1\) increases. 
+
+The scatter plot in Figure~\ref{fig:comparison of TS and DATS} further confirms that DA-TS outperforms TS in the majority of cases when the rewards are near to maximum, with most points lying above the diagonal line. 
+
+Finally, Table~\ref{tab:algorithm_comparison} quantifies this superiority, showing that DA-TS achieves a maximum reward of 3478.56, significantly higher than TS (2634.30), UCB (2663.22), and \(\varepsilon\)-Greedy (2670.17). These results suggest that DA-TS's approach of modeling potential dependencies between arms leads to more effective exploration and exploitation in multi-armed bandit problems.
+
+With the experimental proof, it seems that our algorithm true improves the reward. And could better solve the dependent case.
 
 \newpage
 \section{Part II: Bayesian Bandit Algorithms}

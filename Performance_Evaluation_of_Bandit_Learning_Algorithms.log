@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.4.29)  21 DEC 2024 01:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.4.29)  24 DEC 2024 19:56
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -666,43 +666,44 @@ File: pics/ucb.png Graphic file (type png)
 <use pics/ucb.png>
 Package pdftex.def Info: pics/ucb.png  used on input line 274.
 (pdftex.def)             Requested size: 211.3883pt x 165.8338pt.
- [10 <./pics/greedy.png> <./pics/ucb.png>] [11] [12] [13] [14]
-Overfull \hbox (19.37881pt too wide) in paragraph at lines 416--417
-[]\OT1/cmr/m/n/10.95 In or-der to ob-tain a bet-ter re-sult, we de-sign four al-go-rithms: \OT1/cmtt/m/n/10.95 greedy[]dependence\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 ucb[]dependence\OT1/cmr/m/n/10.95 ,
- []
-
-[15]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 424.
+ [10 <./pics/greedy.png> <./pics/ucb.png>] [11] [12] [13] [14] [15]
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 446.
  [16]
-<pics/greedy_dependence.png, id=230, 714.7503pt x 426.393pt>
+<pics/greedy_dependence.png, id=232, 714.7503pt x 426.393pt>
 File: pics/greedy_dependence.png Graphic file (type png)
 <use pics/greedy_dependence.png>
-Package pdftex.def Info: pics/greedy_dependence.png  used on input line 456.
+Package pdftex.def Info: pics/greedy_dependence.png  used on input line 493.
 (pdftex.def)             Requested size: 375.80542pt x 224.198pt.
-<pics/ucb_dependence.png, id=231, 860.013pt x 426.393pt>
+<pics/ucb_dependence.png, id=233, 859.2903pt x 426.393pt>
 File: pics/ucb_dependence.png Graphic file (type png)
 <use pics/ucb_dependence.png>
-Package pdftex.def Info: pics/ucb_dependence.png  used on input line 463.
-(pdftex.def)             Requested size: 375.80542pt x 186.32526pt.
-<pics/ts1.png, id=232, 685.8423pt x 570.933pt>
+Package pdftex.def Info: pics/ucb_dependence.png  used on input line 500.
+(pdftex.def)             Requested size: 375.80542pt x 186.48141pt.
+<pics/ts1.png, id=234, 688.0104pt x 570.933pt>
 File: pics/ts1.png Graphic file (type png)
 <use pics/ts1.png>
-Package pdftex.def Info: pics/ts1.png  used on input line 470.
-(pdftex.def)             Requested size: 328.82706pt x 273.7398pt.
+Package pdftex.def Info: pics/ts1.png  used on input line 507.
+(pdftex.def)             Requested size: 328.82706pt x 272.86864pt.
  [17 <./pics/greedy_dependence.png> <./pics/ucb_dependence.png>]
-<pics/dats1.png, id=241, 685.8423pt x 570.933pt>
+<pics/dats1.png, id=243, 688.0104pt x 570.933pt>
 File: pics/dats1.png Graphic file (type png)
 <use pics/dats1.png>
-Package pdftex.def Info: pics/dats1.png  used on input line 477.
-(pdftex.def)             Requested size: 328.82706pt x 273.7398pt.
-<pics/ts_dats2.png, id=242, 714.7503pt x 426.393pt>
+Package pdftex.def Info: pics/dats1.png  used on input line 514.
+(pdftex.def)             Requested size: 328.82706pt x 272.86864pt.
+<pics/alpha1.png, id=244, 620.7993pt x 395.3169pt>
+File: pics/alpha1.png Graphic file (type png)
+<use pics/alpha1.png>
+Package pdftex.def Info: pics/alpha1.png  used on input line 521.
+(pdftex.def)             Requested size: 375.80542pt x 239.3092pt.
+ [18 <./pics/ts1.png> <./pics/dats1.png>]
+<pics/ts_dats2.png, id=253, 714.0276pt x 426.393pt>
 File: pics/ts_dats2.png Graphic file (type png)
 <use pics/ts_dats2.png>
-Package pdftex.def Info: pics/ts_dats2.png  used on input line 484.
-(pdftex.def)             Requested size: 375.80542pt x 224.198pt.
- [18 <./pics/ts1.png> <./pics/dats1.png>] [19 <./pics/ts_dats2.png>]
+Package pdftex.def Info: pics/ts_dats2.png  used on input line 528.
+(pdftex.def)             Requested size: 375.80542pt x 224.42572pt.
+ [19 <./pics/alpha1.png> <./pics/ts_dats2.png>] [20]
 No file Performance_Evaluation_of_Bandit_Learning_Algorithms.bbl.
-[20] (Performance_Evaluation_of_Bandit_Learning_Algorithms.aux)
+[21] (Performance_Evaluation_of_Bandit_Learning_Algorithms.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
@@ -711,17 +712,17 @@ Package rerunfilecheck Info: File `Performance_Evaluation_of_Bandit_Learning_Alg
 (rerunfilecheck)             Checksum: 4EC244CA273052D93D1315E32A337D23;1193.
  ) 
 Here is how much of TeX's memory you used:
- 25266 strings out of 474486
- 448449 string characters out of 5760639
+ 25293 strings out of 474486
+ 448926 string characters out of 5760639
  1977542 words of memory out of 5000000
- 46998 multiletter control sequences out of 15000+600000
+ 47021 multiletter control sequences out of 15000+600000
  569636 words of font info for 80 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,17n,87p,914b,1315s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,17n,87p,918b,1315s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\21623\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\21623\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcti1095.pk><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on Performance_Evaluation_of_Bandit_Learning_Algorithms.pdf (20 pages, 460542 bytes).
+Output written on Performance_Evaluation_of_Bandit_Learning_Algorithms.pdf (21 pages, 503838 bytes).
 PDF statistics:
- 367 PDF objects out of 1000 (max. 8388607)
- 126 named destinations out of 1000 (max. 500000)
- 120 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 378 PDF objects out of 1000 (max. 8388607)
+ 130 named destinations out of 1000 (max. 500000)
+ 125 words of extra memory for PDF output out of 10000 (max. 10000000)
 
