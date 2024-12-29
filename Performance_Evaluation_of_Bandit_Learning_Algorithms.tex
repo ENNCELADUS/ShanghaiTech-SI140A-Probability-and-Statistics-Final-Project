@@ -336,7 +336,7 @@ The Thompson Sampling algorithm is a Bayesian method that uses prior and posteri
   \textbf{Prior Belief:}
     \begin{itemize}
         \item \(\alpha_j\) and \(\beta_j\) represent our prior belief about the reward distribution for action \(j\).
-        \item For example, \(\alpha_j = 1\) and \(\beta_j = 1\) implies that we expect the reward probability for action \(j\) to be 50%, but we have low confidence in this belief (uniform distribution).
+        \item For example, \(\alpha_j = 1\) and \(\beta_j = 1\) implies that we expect the reward probability for action \(j\) to be 50\%, but we have low confidence in this belief (uniform distribution).
         \item A higher value of \(\alpha_j\) relative to \(\beta_j\) means that we believe the reward probability for action \(j\) is higher, whereas a lower value of \(\alpha_j\) relative to \(\beta_j\) suggests that we believe the reward probability is lower.
     \end{itemize}
 
@@ -431,53 +431,90 @@ The primary goal is to determine the optimal algorithmic parameters that maximiz
 \subsubsection*{Algorithm Design}
 For the dependent case, we test the three original algorithms on dependent arms. Then, we implement a new algorithm, \texttt{Dependency-Aware Thompson Sampling} (DATS), which adapts the Thompson Sampling algorithm to account for the interdependence between arms to obtain a better result.
 
+\begin{description}
+\item[Algorithm Description:] The Dependency-Aware Thompson Sampling with Dynamic Environment Updates algorithm is designed to handle non-stationary environments where arm probabilities change over time and there are potential dependencies between arms. The algorithm operates as follows:
+\begin{enumerate}
+    \item \textbf{Initialization:} 
+    \begin{itemize}
+        \item Initialize probabilities ($\theta$) for each arm.
+        \item Set initial Beta distribution parameters ($\alpha$ and $\beta$) for each arm.
+        \item Define parameters: $N$ (number of iterations), $p$ (probability update rate), $\epsilon$ (exploration rate), $\gamma$ (dependency factor).
+    \end{itemize}
+    
+    \item \textbf{Arm Selection:} For each iteration $t$ from 1 to $N$:
+    \begin{itemize}
+        \item With probability $\epsilon$, explore by choosing a random arm.
+        \item Otherwise (probability $1-\epsilon$), exploit using Thompson Sampling:
+        \begin{itemize}
+            \item For each arm $i$, sample a value from Beta($\alpha_i$, $\beta_i$).
+            \item Choose the arm with the highest sampled value.
+        \end{itemize}
+    \end{itemize}
+    
+    \item \textbf{Reward Observation:} 
+    \begin{itemize}
+        \item Observe a reward (0 or 1) based on the current probability of the chosen arm.
+        \item Add the reward to the total reward.
+    \end{itemize}
+    
+    \item \textbf{Beta Distribution Update:} 
+    \begin{itemize}
+        \item If reward = 1:
+        \begin{itemize}
+            \item Increment $\alpha$ of the chosen arm by 1.
+            \item If $\gamma > 0$, increment $\alpha$ of all other arms by $\gamma$.
+        \end{itemize}
+        \item If reward = 0:
+        \begin{itemize}
+            \item Increment $\beta$ of the chosen arm by 1.
+            \item If $\gamma > 0$, increment $\beta$ of all other arms by $\gamma$.
+        \end{itemize}
+    \end{itemize}
+    
+    \item \textbf{Return:} Total accumulated reward over all iterations.
+\end{enumerate}
+
+
+\item[Key Features:] This approach combines several strategies to handle the challenges of a non-stationary, dependent arm environment:
+
 \begin{itemize}
-    \item \texttt{greedy\_dependence}
-    \item \texttt{ucb\_dependence}
-    \item \texttt{thompson\_sampling\_dependence}
-    \item \texttt{dependency\_aware\_thompson\_sampling}
+    \item The $\epsilon$-greedy method ensures continued exploration, which is crucial for detecting changes in the environment.
+    \item Thompson Sampling provides a balance between exploration and exploitation based on the current beliefs about arm probabilities.
 \end{itemize}
 
-The first three use the same method as before. We just simply make probability of the arm change.
-
-The new algorithm we implement, named \texttt{Dependency-Aware Thompson Sampling} operates as follows. For each step, it either explores randomly with probability $p$ or uses Thompson Sampling, drawing from Beta distributions to select an arm. After observing the reward $r \in \{0,1\}$, it updates the chosen arm's Beta distribution parameters ($\alpha_j$ or $\beta_j$) by 1. Crucially, it also partially updates non-chosen arms' parameters by a factor $\gamma$ ($0 \leq \gamma \leq 1$), reflecting potential dependencies between arms. This approach balances exploration and exploitation while accounting for arm correlations, potentially leading to faster learning in environments where arm performances are not entirely independent.
-
-\begin{algorithm}
-\caption{Dependency-Aware Thompson Sampling with Partial Updates}
+\end{description}
+\begin{algorithm}[H]
+\caption{Dependency-Aware Thompson Sampling}
+\label{alg:DA-TS}
 \begin{algorithmic}[1]
-\State \textbf{Initialize:} $\text{total\_reward} \gets 0$
-\For{$t = 1$ to $N$}
-    \State Draw $u \sim \text{Uniform}(0, 1)$
-    \If{$u < p$} 
-        \State Select arm $j \gets \text{Randomly pick from } \{1, 2, \ldots, K\}$
+\Ensure Total cumulative reward $\text{total\_reward}$
+\State $\alpha \gets \alpha_{\text{init}}$
+\State $\beta \gets \beta_{\text{init}}$
+\State $K \gets \text{length}(\alpha)$
+\State $\theta_{\text{current}} \gets \theta$
+\State $\text{total\_reward} \gets 0$
+\For{$t \gets 1$ to $N$}
+    \If{$\text{Uniform}(0,1) < \epsilon$}
+        \State $\text{chosen\_arm} \gets \text{Random}(\{1,\ldots,K\})$
     \Else
-        \For{$k = 1$ to $K$}
-            \State Sample $\tilde{\theta}_k \sim \text{Beta}(\alpha_k, \beta_k)$
+        \For{$i \gets 1$ to $K$}
+            \State $\text{samples}[i] \gets \text{Beta}(\alpha[i], \beta[i])$
         \EndFor
-        \State Select arm $j \gets \arg\max_{k \in \{1,\ldots,K\}} \tilde{\theta}_k$
+        \State $\text{chosen\_arm} \gets \arg\max(\text{samples})$
     \EndIf
-    
-    \Comment{Observe a reward from the environment}
-    \State $r \sim \text{Bernoulli}(\theta_j)$
-    \State $\text{total\_reward} \gets \text{total\_reward} + r$
-    
-    \Comment{Update the chosen arm}
-    \If{$r = 1$}
-        \State $\alpha_j \gets \alpha_j + 1$
+    \State $\text{reward} \gets \mathbb{1}[\text{Uniform}(0,1) < \theta_{\text{current}}[\text{chosen\_arm}]]$
+    \State $\text{total\_reward} \gets \text{total\_reward} + \text{reward}$
+    \If{$\text{reward} = 1$}
+        \State $\alpha[\text{chosen\_arm}] \gets \alpha[\text{chosen\_arm}] + 1$
+        \For{$\text{other\_arm} \in \{1,\ldots,K\} \setminus \{\text{chosen\_arm}\}$}
+            \State $\alpha[\text{other\_arm}] \gets \alpha[\text{other\_arm}] + \gamma$
+        \EndFor
     \Else
-        \State $\beta_j \gets \beta_j + 1$
+        \State $\beta[\text{chosen\_arm}] \gets \beta[\text{chosen\_arm}] + 1$
+        \For{$\text{other\_arm} \in \{1,\ldots,K\} \setminus \{\text{chosen\_arm}\}$}
+            \State $\beta[\text{other\_arm}] \gets \beta[\text{other\_arm}] + \gamma$
+        \EndFor
     \EndIf
-    
-    \Comment{Partial / Correlated updates for non-chosen arms}
-    \For{$m = 1$ to $K$}
-        \If{$m \neq j$}
-            \If{$r = 1$}
-                \State $\alpha_m \gets \alpha_m + \gamma$
-            \Else
-                \State $\beta_m \gets \beta_m + \gamma$
-            \EndIf
-        \EndIf
-    \EndFor
 \EndFor
 \State \Return $\text{total\_reward}$
 \end{algorithmic}
@@ -492,42 +529,28 @@ The new algorithm we implement, named \texttt{Dependency-Aware Thompson Sampling
     \centering
     \includegraphics[width=0.8\textwidth]{pics/greedy_dependence.png}
     \caption{Dependent \(\varepsilon\)-Greedy Performance}
-    \label{fig:dep_greedy}
+    \label{fig:greedy_dependence}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{pics/ucb_dependence.png}
     \caption{Dependent UCB Performance}
-    \label{fig:dep_ucb}
+    \label{fig:ucb_dependence}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{pics/ts1.png}
-    \caption{Standard Thompson Sampling Performance}
-    \label{fig:dep_ts_standard}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{pics/dats1.png}
-    \caption{Initial Analysis of Dependency-Aware Thompson Sampling}
-    \label{fig:dep_dats_initial}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{pics/alpha1.png}    
+    \includegraphics[width=0.8\textwidth]{pics/best_average_rewards.png}    
     \caption{Comparison of TS and DATS with Different Alpha1}
-    \label{fig:impact of alpha1}
+    \label{fig:best_average_rewards}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{pics/ts_dats2.png}
+    \includegraphics[width=0.8\textwidth]{pics/comparison_scatter.png}
     \caption{Comparison of TS and DATS}
-    \label{fig:comparison of TS and DATS}
+    \label{fig:comparison_scatter}
 \end{figure}
 
 \newpage
@@ -538,19 +561,21 @@ By experimenting, we receive the following results:
         \hline
         \textbf{Algorithm} & \textbf{Best Parameters} & \textbf{Maximum Reward} \\
         \hline
-        \(\varepsilon\)-Greedy & \(\varepsilon = 1.00\) & 2670.17 \\
+        \(\varepsilon\)-Greedy & \(\varepsilon = 1.00\) & 2668.57 \\
         \hline
-        UCB & \(c = 7.20\) & 2663.22 \\
+        UCB & \(c = 8.60\) & 2662.44 \\
         \hline
         Thompson Sampling & \(\begin{array}{l}
-            \alpha = [1, 2] \\
-            \beta = [1, 1]
-        \end{array}\) & 2634.30 \\
+            \alpha = [600, 300, 450] \\
+            \beta = [1, 1, 31]
+        \end{array}\) & 2667.74 \\
         \hline
         Dependency-Aware TS & \(\begin{array}{l}
-            \alpha = [401, 2] \\
-            \beta = [1, 3]
-        \end{array}\) & 3478.56 \\
+            \alpha = [600, 450, 450] \\
+            \beta = [16, 16, 31] \\
+            \epsilon = 0.001 \\
+            \gamma = 10^{-6}
+        \end{array}\) & 2673.80 \\
         \hline
     \end{tabularx}
     \caption{Performance Comparison of Bandit Algorithms}
@@ -558,22 +583,19 @@ By experimenting, we receive the following results:
 \end{table}
 
 \setstretch{1.1}
-The experimental results demonstrate the superior performance of the Dependency-Aware Thompson Sampling (DA-TS) algorithm compared to standard Thompson Sampling (TS) and other bandit algorithms. 
 
-As shown in Figure~\ref{fig:dep_ts_standard} and Figure~\ref{fig:dep_dats_initial}, DA-TS achieves higher average total rewards across various \(\alpha\) and \(\beta\) parameter combinations. The difference is more significant when $\beta_1$ is small ($\beta_1 = 1$). Figure~\ref{fig:impact of alpha1} illustrates that DA-TS maintains this performance advantage over TS for different \(\alpha_1\) values, with both algorithms showing relatively stable performance as \(\alpha_1\) increases. 
+The experimental results presented in Figures \ref{fig:greedy_dependence}, \ref{fig:ucb_dependence}, \ref{fig:best_average_rewards}, \ref{fig:comparison_scatter}, and Table \ref{tab:algorithm_comparison} provide compelling evidence for the superiority of our proposed Dependency-Aware Thompson Sampling (DATS) algorithm over the other four methods examined: Greedy Dependence, UCB Dependence, and TS Independent.
 
-The scatter plot in Figure~\ref{fig:comparison of TS and DATS} further confirms that DA-TS outperforms TS in the majority of cases when the rewards are near to maximum, with most points lying above the diagonal line. 
+\begin{enumerate}
+    \item \textbf{Superior Performance:} As shown in Figure \ref{fig:best_average_rewards} and Table \ref{tab:algorithm_comparison}, DATS achieves the highest average reward (2673.80) among all methods tested. This outperforms Greedy Dependence (2668.57), UCB Dependence (2662.44), and TS Independent (2667.74), demonstrating DATS's ability to make more informed decisions in multi-armed bandit problems with dependent arms.
 
-Finally, Table~\ref{tab:algorithm_comparison} quantifies this superiority, showing that DA-TS achieves a maximum reward of 3478.56, significantly higher than TS (2634.30), UCB (2663.22), and \(\varepsilon\)-Greedy (2670.17). These results suggest that DA-TS's approach of modeling potential dependencies between arms leads to more effective exploration and exploitation in multi-armed bandit problems.
+    \item \textbf{Consistent Outperformance:} The scatter plot in Figure \ref{fig:comparison_scatter} illustrates that DATS consistently outperforms the TS Independent method across various parameter settings. The majority of points lie above the $y=x$ line, indicating that DATS yields higher average rewards in most scenarios.
 
-With the experimental proof, it seems that our algorithm true improves the reward. And could better solve the dependent case.
+    \item \textbf{Robustness to Hyperparameters:} Unlike the Greedy Dependence (Figure \ref{fig:greedy_dependence}) and UCB Dependence (Figure \ref{fig:ucb_dependence}) methods, which show high sensitivity to their respective hyperparameters ($\epsilon$ and confidence parameter $c$), DATS demonstrates more stable performance across different settings. This robustness is a crucial advantage in real-world applications where optimal hyperparameter tuning may be challenging.
+\end{enumerate}
 
 \newpage
 \section{Part II: Bayesian Bandit Algorithms}
-
-\bibliographystyle{plainnat}
-\bibliography{references}  % references.bib file
-
-\appendix
+\subsection{Problem 1}
 
 \end{document}

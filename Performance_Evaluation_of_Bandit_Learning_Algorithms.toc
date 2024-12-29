@@ -9,3 +9,4 @@
 \contentsline {paragraph}{Experimental Setup}{15}{paragraph*.2}%
 \contentsline {paragraph}{Objective}{15}{paragraph*.3}%
 \contentsline {section}{\numberline {3}Part II: Bayesian Bandit Algorithms}{21}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Problem 1}{21}{subsection.3.1}%
