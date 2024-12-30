@@ -597,5 +597,52 @@ The experimental results presented in Figures \ref{fig:greedy_dependence}, \ref{
 \newpage
 \section{Part II: Bayesian Bandit Algorithms}
 \subsection{Problem 1}
+\subsubsection*{Experiment Settings}
+
+The simulation was conducted with the following parameters:
+
+\begin{itemize}
+    \item \textbf{True Success Probabilities:} The true success probabilities for the two arms were set to: $\theta_{\text{true}} = [0.7, 0.5]$
+    \item \textbf{Beta Distribution Priors:} The prior parameters for the Beta distributions were initialized as:
+    $\alpha_{\text{prior}} = [1, 1], \quad \beta_{\text{prior}} = [1, 1]$
+    \item \textbf{Gamma Values:} The discount factor $\gamma$ was varied linearly from 0.95 to 1.0 in increments of 0.01, resulting in 50 values:
+    $\gamma \in \text{linspace}(0.95, 1.0, 50)$
+    \item \textbf{Number of Time Steps:} Each trial consisted of 5000 time steps:
+    $T = 5000$
+    \item \textbf{Number of Trials per Gamma:} The experiment was repeated 50 times for each $\gamma$ value:
+    $\text{Repeats} = 50$
+\end{itemize}
+
+\subsubsection*{Results}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pics/intuitive.png}
+    \caption{Intuitive Outcomes with Different $\gamma$ Values}
+    \label{fig:intuitive_outcomes}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pics/gaps.png}
+    \caption{Gaps Between Optimal and Intuitive Algorithm Outcomes with Different $\gamma$ Values}
+    \label{fig:gaps}
+\end{figure}
+
+In this part, we implemented an intuitive algorithm and calculated the theoretical optimal rewards. 
+
+The theoretical optimal reward is calculated as:
+\[
+\text{Optimal Reward} = \theta_{\text{best}} \times \frac{1-\gamma^{\text{time\_steps}}}{1-\gamma}
+\]
+where $\theta_{\text{best}}$ is the highest success probability among the arms, $\gamma$ is the discount factor, and \textit{time\_steps} is the total number of pulls in a trial.
+
+The results of our experiments are visualized in the two figures:
+
+From Figure~\ref{fig:gaps}, we observe that the gap between the optimal reward and the Average Total Reward (ATR) produced by the intuitive algorithm remains small for most values of the discount factor $\gamma$. This demonstrates that the intuitive algorithm behaves very well in most cases.
+
+Additionally, as shown in Figure~\ref{fig:intuitive_outcomes}, the ATR increases as $\gamma$ approaches 1.0, which aligns with our expectations since the algorithm becomes more conservative, favoring long-term rewards.
+
+\newpage
+\subsection{Problem 2}
 
 \end{document}
