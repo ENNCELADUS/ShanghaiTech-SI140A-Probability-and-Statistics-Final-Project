@@ -644,5 +644,96 @@ Additionally, as shown in Figure~\ref{fig:intuitive_outcomes}, the ATR increases
 
 \newpage
 \subsection{Problem 2}
+\subsubsection*{Situation when the intuitive algorithm fails to perform optimally}
+We set the theta values for the two arms as $\theta_{\text{true}} = [0.3, 0.6]$. 
+By running the experiment with the same other settings as in Problem 1, we get the following results:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pics/gaps2.png}
+    \caption{Gaps Between Optimal and Intuitive Algorithm Outcomes with Different $\gamma$ Values}
+    \label{fig:intuitive_fail}
+\end{figure}
+Since the $\gamma \in [0, 0.99]$ shows no significant difference in the gaps between the optimal and intuitive algorithm outcomes, we simply omit testing these values.
+
+As we can see in the Figure~\ref{fig:intuitive_fail}, the gap between the optimal reward and the Average Total Reward (ATR) produced by the intuitive algorithm is significantly larger when $\gamma \in [0.998, 1.000]$. This indicates that the intuitive algorithm fails to perform optimally in this scenario.
+
+\newpage
+\subsubsection*{Comparison between the intuitive algorithm and TS}
+We compare the performance of the intuitive algorithm with that of Thompson Sampling (TS) by plotting the Average Total Reward (ATR) for both algorithms across different values of the discount factor $\gamma$. The settings are the same as above.
+We get the following results:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pics/gaps3.png}
+    \caption{Comparison of Intuitive Algorithm and Thompson Sampling}
+    \label{fig:comparison_TS}
+\end{figure}
+As shown in Figure~\ref{fig:comparison_TS}, the Average Total Reward (ATR) produced by Thompson Sampling (TS) is significantly higher than that of the intuitive algorithm across $\gamma \in [0.9875, 1.0000]$. This indicates that Thompson Sampling outperforms the intuitive algorithm in this scenario.
+
+Therefore, by these two experiments, we can conclude that the intuitive algorithm may fail to perform optimally in certain situations, and Thompson Sampling (TS) can provide better results in such cases.
+
+\newpage
+\setstretch{1.25}
+\subsection{Problem 3}
+\subsubsection*{Problem Statement}
+For the expected total reward under an optimal policy, show that the following recurrence equation holds:
+\begin{align*}
+R_1(\alpha_1, \beta_1) &= \frac{\alpha_1}{\alpha_1 + \beta_1}[1 + \gamma R(\alpha_1 + 1, \beta_1, \alpha_2, \beta_2)] + \frac{\beta_1}{\alpha_1 + \beta_1}[\gamma R(\alpha_1, \beta_1 + 1, \alpha_2, \beta_2)]; \\
+R_2(\alpha_2, \beta_2) &= \frac{\alpha_2}{\alpha_2 + \beta_2}[1 + \gamma R(\alpha_1, \beta_1, \alpha_2 + 1, \beta_2)]  + \frac{\beta_2}{\alpha_2 + \beta_2}[\gamma R(\alpha_1, \beta_1, \alpha_2, \beta_2 + 1)]; \\
+R(\alpha_1, \beta_1, \alpha_2, \beta_2) &= \max \{R_1(\alpha_1, \beta_1), R_2(\alpha_2, \beta_2)\}.
+\end{align*}
+
+\subsubsection*{Proof}
+
+At time \( t = 0 \), the parameters \(\theta_1\) and \(\theta_2\) are assumed to follow independent Beta distributions with parameters \((\alpha_1, \beta_1)\) and \((\alpha_2, \beta_2)\), respectively.
+
+\vspace{1em}
+\noindent\textbf{Pull the First Arm}
+
+When arm 1 is pulled at time \( t \), the reward is determined by the Bernoulli distribution \( \text{Bern}(\theta_1) \):
+\begin{itemize}
+    \item With probability \(\theta_1\), a success occurs, yielding an immediate reward of \( 1 \) and resulting in a posterior distribution \( \text{Beta}(\alpha_1 + 1, \beta_1) \). The future reward is discounted by \(\gamma\), leading to a total future reward of \(\gamma R(\alpha_1 + 1, \beta_1, \alpha_2, \beta_2)\).
+    \item With probability \(1 - \theta_1\), a failure occurs, yielding an immediate reward of \( 0 \) and resulting in a posterior distribution \( \text{Beta}(\alpha_1, \beta_1 + 1) \). The total future reward in this case is \(\gamma R(\alpha_1, \beta_1 + 1, \alpha_2, \beta_2)\).
+\end{itemize}
+Combining these outcomes, the expected reward from pulling arm 1 is:
+\[
+R_1(\alpha_1, \beta_1) = \theta_1 [1 + \gamma R(\alpha_1 + 1, \beta_1, \alpha_2, \beta_2)] + (1 - \theta_1) [\gamma R(\alpha_1, \beta_1 + 1, \alpha_2, \beta_2)].
+\]
+Using the expectation of \(\theta_1\) under its Beta distribution, where:
+\[
+E[\theta_1] = \frac{\alpha_1}{\alpha_1 + \beta_1}, \quad E[1 - \theta_1] = \frac{\beta_1}{\alpha_1 + \beta_1},
+\]
+we can rewrite \(R_1(\alpha_1, \beta_1)\) as:
+\[
+R_1(\alpha_1, \beta_1) = \frac{\alpha_1}{\alpha_1 + \beta_1} [1 + \gamma R(\alpha_1 + 1, \beta_1, \alpha_2, \beta_2)] + \frac{\beta_1}{\alpha_1 + \beta_1} [\gamma R(\alpha_1, \beta_1 + 1, \alpha_2, \beta_2)].
+\]
+
+\noindent\textbf{Pull the Second Arm}
+
+Similarly, when arm 2 is pulled, the reward is determined by the Bernoulli distribution \( \text{Bern}(\theta_2) \). 
+
+The outcomes are:
+\begin{itemize}
+    \item With probability \(\theta_2\), a success occurs, yielding an immediate reward of \( 1 \) and resulting in a posterior distribution \( \text{Beta}(\alpha_2 + 1, \beta_2) \). The total future reward is \(\gamma R(\alpha_1, \beta_1, \alpha_2 + 1, \beta_2)\).
+    \item With probability \(1 - \theta_2\), a failure occurs, yielding an immediate reward of \( 0 \) and resulting in a posterior distribution \( \text{Beta}(\alpha_2, \beta_2 + 1) \). The total future reward in this case is \(\gamma R(\alpha_1, \beta_1, \alpha_2, \beta_2 + 1)\).
+\end{itemize}
+Combining these outcomes, the expected reward from pulling arm 2 is:
+\[
+R_2(\alpha_2, \beta_2) = \frac{\alpha_2}{\alpha_2 + \beta_2} [1 + \gamma R(\alpha_1, \beta_1, \alpha_2 + 1, \beta_2)] + \frac{\beta_2}{\alpha_2 + \beta_2} [\gamma R(\alpha_1, \beta_1, \alpha_2, \beta_2 + 1)].
+\]
+
+The expected total reward under the optimal policy is the maximum of the rewards from pulling either arm 1 or arm 2:
+\[
+R(\alpha_1, \beta_1, \alpha_2, \beta_2) = \max\{R_1(\alpha_1, \beta_1), R_2(\alpha_2, \beta_2)\}.
+\]
+Combining all results, we have proved that the recurrence equations are:
+\begin{align*}
+R_1(\alpha_1, \beta_1) &= \frac{\alpha_1}{\alpha_1 + \beta_1}[1 + \gamma R(\alpha_1 + 1, \beta_1, \alpha_2, \beta_2)] + \frac{\beta_1}{\alpha_1 + \beta_1}[\gamma R(\alpha_1, \beta_1 + 1, \alpha_2, \beta_2)], \\
+R_2(\alpha_2, \beta_2) &= \frac{\alpha_2}{\alpha_2 + \beta_2}[1 + \gamma R(\alpha_1, \beta_1, \alpha_2 + 1, \beta_2)] + \frac{\beta_2}{\alpha_2 + \beta_2}[\gamma R(\alpha_1, \beta_1, \alpha_2, \beta_2 + 1)], \\
+R(\alpha_1, \beta_1, \alpha_2, \beta_2) &= \max\{R_1(\alpha_1, \beta_1), R_2(\alpha_2, \beta_2)\}.
+\end{align*}
+
+
+\newpage
+\subsection{Problem 4}
 
 \end{document}

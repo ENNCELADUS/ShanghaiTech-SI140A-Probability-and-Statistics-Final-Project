@@ -11,3 +11,5 @@
 \contentsline {section}{\numberline {3}Part II: Bayesian Bandit Algorithms}{21}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Problem 1}{21}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Problem 2}{23}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Problem 3}{25}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Problem 4}{27}{subsection.3.4}%

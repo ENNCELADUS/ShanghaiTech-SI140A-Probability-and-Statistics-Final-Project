@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.4.29)  30 DEC 2024 22:50
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.4.29)  31 DEC 2024 21:58
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -656,12 +656,12 @@ Overfull \hbox (23.00014pt too wide) in paragraph at lines 19--20
  []
 
 ) [6] (code/2_2.py) (code/2_3.py) [7] [8] [9]
-<pics/greedy.png, id=185, 419.166pt x 328.8285pt>
+<pics/greedy.png, id=195, 419.166pt x 328.8285pt>
 File: pics/greedy.png Graphic file (type png)
 <use pics/greedy.png>
 Package pdftex.def Info: pics/greedy.png  used on input line 268.
 (pdftex.def)             Requested size: 211.3883pt x 165.8338pt.
-<pics/ucb.png, id=187, 419.166pt x 328.8285pt>
+<pics/ucb.png, id=197, 419.166pt x 328.8285pt>
 File: pics/ucb.png Graphic file (type png)
 <use pics/ucb.png>
 Package pdftex.def Info: pics/ucb.png  used on input line 274.
@@ -673,39 +673,56 @@ Overfull \hbox (1.67729pt too wide) in paragraph at lines 481--482
 
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 487.
 [16] [17]
-<pics/greedy_dependence.png, id=245, 714.7503pt x 426.393pt>
+<pics/greedy_dependence.png, id=255, 714.7503pt x 426.393pt>
 File: pics/greedy_dependence.png Graphic file (type png)
 <use pics/greedy_dependence.png>
 Package pdftex.def Info: pics/greedy_dependence.png  used on input line 530.
 (pdftex.def)             Requested size: 375.80542pt x 224.198pt.
-<pics/ucb_dependence.png, id=246, 859.2903pt x 426.393pt>
+<pics/ucb_dependence.png, id=256, 859.2903pt x 426.393pt>
 File: pics/ucb_dependence.png Graphic file (type png)
 <use pics/ucb_dependence.png>
 Package pdftex.def Info: pics/ucb_dependence.png  used on input line 537.
 (pdftex.def)             Requested size: 375.80542pt x 186.48141pt.
-<pics/best_average_rewards.png, id=247, 702.4644pt x 421.3341pt>
+<pics/best_average_rewards.png, id=257, 702.4644pt x 421.3341pt>
 File: pics/best_average_rewards.png Graphic file (type png)
 <use pics/best_average_rewards.png>
 Package pdftex.def Info: pics/best_average_rewards.png  used on input line 544.
 (pdftex.def)             Requested size: 375.80542pt x 225.4083pt.
  [18 <./pics/greedy_dependence.png> <./pics/ucb_dependence.png>]
-<pics/comparison_scatter.png, id=256, 855.6768pt x 566.5968pt>
+<pics/comparison_scatter.png, id=266, 855.6768pt x 566.5968pt>
 File: pics/comparison_scatter.png Graphic file (type png)
 <use pics/comparison_scatter.png>
 Package pdftex.def Info: pics/comparison_scatter.png  used on input line 551.
 (pdftex.def)             Requested size: 375.80542pt x 248.84514pt.
  [19 <./pics/best_average_rewards.png> <./pics/comparison_scatter.png>] [20]
-<pics/intuitive.png, id=285, 714.7503pt x 426.393pt>
+<pics/intuitive.png, id=295, 714.7503pt x 426.393pt>
 File: pics/intuitive.png Graphic file (type png)
 <use pics/intuitive.png>
 Package pdftex.def Info: pics/intuitive.png  used on input line 619.
 (pdftex.def)             Requested size: 375.80542pt x 224.198pt.
-<pics/gaps.png, id=286, 859.2903pt x 426.393pt>
+<pics/gaps.png, id=296, 859.2903pt x 426.393pt>
 File: pics/gaps.png Graphic file (type png)
 <use pics/gaps.png>
 Package pdftex.def Info: pics/gaps.png  used on input line 626.
 (pdftex.def)             Requested size: 375.80542pt x 186.48141pt.
- [21 <./pics/intuitive.png>] [22 <./pics/gaps.png>] [23] (Performance_Evaluation_of_Bandit_Learning_Algorithms.aux)
+ [21 <./pics/intuitive.png>] [22 <./pics/gaps.png>]
+<pics/gaps2.png, id=311, 859.2903pt x 426.393pt>
+File: pics/gaps2.png Graphic file (type png)
+<use pics/gaps2.png>
+Package pdftex.def Info: pics/gaps2.png  used on input line 652.
+(pdftex.def)             Requested size: 375.80542pt x 186.48141pt.
+ [23 <./pics/gaps2.png>]
+<pics/gaps3.png, id=319, 495.7722pt x 339.669pt>
+File: pics/gaps3.png Graphic file (type png)
+<use pics/gaps3.png>
+Package pdftex.def Info: pics/gaps3.png  used on input line 666.
+(pdftex.def)             Requested size: 375.80542pt x 257.48251pt.
+ [24 <./pics/gaps3.png>]
+Overfull \hbox (0.34032pt too wide) in paragraph at lines 712--713
+[]\OT1/cmr/m/n/10.95 Similarly, when arm 2 is pulled, the re-ward is de-ter-mined by the Bernoulli dis-tri-bu-tion $[](\OML/cmm/m/it/10.95 ^^R[]\OT1/cmr/m/n/10.95 )$. 
+ []
+
+[25] [26] [27] (Performance_Evaluation_of_Bandit_Learning_Algorithms.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
@@ -717,21 +734,21 @@ Package rerunfilecheck Warning: File `Performance_Evaluation_of_Bandit_Learning_
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `Performance_Evaluation_of_Bandit_Learning_Algorithms.out':
-(rerunfilecheck)             Before: 2AFA234EA866C0E283D134311C9D0ED7;1299
-(rerunfilecheck)             After:  784DC36215C03A7FD0D71B604CB6F656;1405.
+(rerunfilecheck)             Before: 36D249D189465905EB0B82571C5AB6C8;1511
+(rerunfilecheck)             After:  B9813B093D38BDB378334B1029DEE0AC;1617.
  ) 
 Here is how much of TeX's memory you used:
- 25303 strings out of 474486
- 449138 string characters out of 5760639
+ 25329 strings out of 474486
+ 449591 string characters out of 5760639
  1977542 words of memory out of 5000000
- 47019 multiletter control sequences out of 15000+600000
+ 47037 multiletter control sequences out of 15000+600000
  569636 words of font info for 80 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,18n,87p,721b,1315s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\21623\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\21623\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcti1095.pk><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><D:/LaTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on Performance_Evaluation_of_Bandit_Learning_Algorithms.pdf (23 pages, 543206 bytes).
+Output written on Performance_Evaluation_of_Bandit_Learning_Algorithms.pdf (27 pages, 621862 bytes).
 PDF statistics:
- 409 PDF objects out of 1000 (max. 8388607)
- 142 named destinations out of 1000 (max. 500000)
- 133 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 446 PDF objects out of 1000 (max. 8388607)
+ 150 named destinations out of 1000 (max. 500000)
+ 159 words of extra memory for PDF output out of 10000 (max. 10000000)
 
