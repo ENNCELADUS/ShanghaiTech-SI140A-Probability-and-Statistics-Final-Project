@@ -80,7 +80,7 @@
     \textbf{Performance Evaluation of Bandit Learning Algorithms} \\
     \bigskip
 }
-\author{Jingran Fan \and Anrui Wang \and Zhao Lu}
+\author{Anrui Wang \and Zhao Lu \and Jingran Fan} 
 \bigskip
 \date{Due date: \DueDate}
 
@@ -735,5 +735,171 @@ R(\alpha_1, \beta_1, \alpha_2, \beta_2) &= \max\{R_1(\alpha_1, \beta_1), R_2(\al
 
 \newpage
 \subsection{Problem 4}
+\subsubsection*{Problem Statement}
+How to solve the recurrence equations exactly or approximately?
+
+\subsubsection*{Solution Approach}
+
+Dynamic Programming (DP) is a powerful method that, in theory, can provide exact solutions to the optimal policy. The principle of optimality, which underlies DP, ensures that if we can evaluate all possible states, we will find the globally optimal solution. However, the transition from theory to practice introduces several challenges that necessitate an approximate solution:
+
+\begin{description}
+    \item[Infinite State Space] The Beta-Bernoulli bandit has an infinite state space. Each arm's Beta distribution parameters ($\alpha$ and $\beta$) can grow indefinitely as we observe more outcomes. In theory, DP would require us to compute and store values for every possible combination of $(\alpha_1, \beta_1, \alpha_2, \beta_2)$, which is infeasible.
+
+    \item[Computational Constraints] Even if we could store an infinite number of states, computing the optimal value for each state would require an infinite number of operations. Real-world computers have finite processing capabilities, making exact computation impossible.
+
+    \item[Memory Limitations] Storing values for an infinite number of states would require infinite memory, which is not available in practice.
+\end{description}
+
+To address these challenges, we employ an approximation strategy:
+
+\begin{enumerate}
+    \item \textbf{State Space Truncation:} We introduce a maximum value $N_{max}$ (denoted as $M$ in our algorithm) for each parameter. This effectively "truncates" our infinite state space to a finite one.
+
+    \item \textbf{Boundary Conditions:} We define boundary conditions for our truncated space (e.g., setting the value to 0 when $\alpha_i + \beta_i = N_{max}$ for either arm).
+
+    \item \textbf{Value Iteration:} We use iterative updates to approximate the value function, stopping when changes become smaller than a predefined tolerance or after a maximum number of iterations.
+\end{enumerate}
+
+This approach allows us to find an approximate solution that is computationally feasible. The quality of this approximation depends on several factors:
+
+\begin{itemize}
+    \item The choice of $N_{max}$: Larger values allow for a more accurate approximation but increase computational cost.
+    \item The convergence tolerance: Smaller tolerances can provide more accurate results but may require more iterations.
+    \item The discount factor $\gamma$: Values closer to 1 consider long-term rewards more heavily but may slow convergence.
+\end{itemize}
+
+In practice, these parameters are often tuned to balance solution quality with computational efficiency. While we sacrifice theoretical exactness, this approach often provides solutions that are "good enough" for practical applications, capturing the essential behavior of the optimal policy within a tractable computation framework.
+
+\subsubsection*{Pseudocode}
+
+The following algorithm implements our solution approach:
+
+\begin{algorithm}[H]
+\caption{Solve 2-Armed Beta-Bernoulli Bandit}
+\begin{algorithmic}[1]
+\Procedure{solve\_2armed\_bandit\_dp}{$M, \gamma, tol, max\_iter$}
+    \State \textbf{Input:}
+    \State \hspace{\algorithmicindent} $M$: Truncation level for $\alpha_i, \beta_i$
+    \State \hspace{\algorithmicindent} $\gamma$: Discount factor $(0 < \gamma < 1)$
+    \State \hspace{\algorithmicindent} $tol$: Convergence tolerance
+    \State \hspace{\algorithmicindent} $max\_iter$: Maximum number of iterations
+    
+    \State Initialize $R$ and $policy$ as 4D arrays of size $(M+1) \times (M+1) \times (M+1) \times (M+1)$
+    \For{$it = 1$ to $max\_iter$}
+        \State $delta \gets 0$ \Comment{Track maximum change in this iteration}
+        \For{$\alpha_1 = 1$ to $M$}
+            \For{$\beta_1 = 1$ to $M$}
+                \For{$\alpha_2 = 1$ to $M$}
+                    \For{$\beta_2 = 1$ to $M$}
+                        \State Compute $R_1(\alpha_1, \beta_1)$ and $R_2(\alpha_2, \beta_2)$ using recurrence relations
+                        \State $new\_val \gets \max(R_1, R_2)$
+                        \State $old\_val \gets R[\alpha_1, \beta_1, \alpha_2, \beta_2]$
+                        \State $R[\alpha_1, \beta_1, \alpha_2, \beta_2] \gets new\_val$
+                        \State $policy[\alpha_1, \beta_1, \alpha_2, \beta_2] \gets \arg \max(R_1, R_2)$
+                        \State $delta \gets \max(delta, |new\_val - old\_val|)$
+                    \EndFor
+                \EndFor
+            \EndFor
+        \EndFor
+        \If{$delta < tol$}
+            \State \textbf{break} \Comment{Convergence achieved}
+        \EndIf
+    \EndFor
+    \State \Return $R, policy$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+This algorithm iteratively computes the value function $R$ and the optimal policy. The policy array stores the optimal action (0 for arm 1, 1 for arm 2) for each state. The algorithm terminates when either the solution converges (change in values less than $tol$) or the maximum number of iterations is reached.
+
+\newpage
+\subsection{Problem 5}
+In this problem, we implement the dynamic programming algorithm to solve the 2-armed Beta-Bernoulli bandit problem with the given recurrence relations. We set the parameters as follows:
+
+\begin{enumerate}
+    \item Discount factors ($\gamma$): 100 evenly spaced values from 0.9 to 1
+    \\ The experiment tests a range of discount factors to explore their impact on performance.
+
+    \item Truncation level for Dynamic Programming ($M$): 17
+    \\ This parameter limits the state space for the DP algorithm, balancing computational feasibility with solution accuracy.
+
+    \item Tolerance ($tol$): $10^{-8}$
+    \\ The algorithm is considered converged when the maximum change in the value function between iterations falls below this threshold.
+    
+    \item Maximum iterations ($max\_iter$): 50
+    \\ This sets an upper limit on the number of iterations for the DP algorithm, ensuring termination even if the tolerance-based convergence is not reached.
+\end{enumerate}
+
+The experiment compares two algorithms:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Algorithm} & \textbf{Description} \\
+\hline
+4D Dynamic Programming & Solves the problem exactly (up to the truncation level) \\
+\hline
+Thompson Sampling & Approximate method using Beta distributions \\
+\hline
+\end{tabular}
+\caption{Comparison of algorithms used in the experiment}
+\label{tab:algorithms}
+\end{table}
+
+For each $\gamma$ value, both algorithms are evaluated over multiple trials. The performance metric is the discounted cumulative reward, defined as:
+
+\begin{equation*}
+R_{\text{total}} = \sum_{t=1}^{T} \gamma^{t-1} r_t
+\end{equation*}
+
+where $r_t$ is the reward at time step $t$, and $T$ is the total number of time steps (5000 in this experiment).
+
+The results are visualized to compare the algorithms' performance across different discount factors and to analyze the performance gap between them.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{pics/DP_Optimal.png}
+    \caption{Dynamic Programming vs. Thompson Sampling: Optimal Performance}
+    \label{fig:DP_Optimal}
+\end{figure}
+
+
+From Figure~\ref{fig:DP_Optimal}, we observe that the Dynamic Programming (DP) algorithm outperforms Thompson Sampling across various discount factors ($\gamma$), despite that the gap shows a sharp decrease as $\gamma$ approaches 1. Interestingly, the optimal $\gamma$ appears to be exactly 1.0000, suggesting that in this scenario, fully prioritizing long-term rewards yields the best performance. The fluctuations in the performance gap for high $\gamma$ values (0.98-1.00) reveal complex dynamics in the relative efficacy of these algorithms as the planning horizon extends, warranting further investigation into the underlying mechanisms driving these differences.
+
+\newpage
+\section{Conclusion}
+
+This study provides a comprehensive evaluation of various bandit learning algorithms, offering valuable insights into their performance characteristics and the nuances of the exploration-exploitation trade-off. Our investigation encompassed both classical and Bayesian approaches, revealing important findings that contribute to the broader understanding of sequential decision-making under uncertainty.
+
+In Part I, we examined the performance of $\varepsilon$-greedy, Upper Confidence Bound (UCB), and Thompson Sampling (TS) algorithms in a classical multi-armed bandit setting. Our results demonstrated that Thompson Sampling consistently outperformed the other algorithms across various parameter settings, achieving the smallest gap from the oracle value. This superior performance underscores the effectiveness of probabilistic methods in balancing exploration and exploitation.
+
+The introduction of arm dependencies in our experiments highlighted the adaptability of these algorithms to more complex environments. Notably, our proposed Dependency-Aware Thompson Sampling (DATS) algorithm showed improved performance in this setting, illustrating the potential for tailored approaches in specific problem domains.
+
+Part II of our study delved into Bayesian bandit algorithms, focusing on discounted reward scenarios. We derived and implemented a dynamic programming solution for the optimal policy, providing a benchmark for comparison with more computationally efficient heuristics. The results revealed that while intuitive algorithms perform well in many cases, they can fail to achieve optimality under certain conditions, particularly as the discount factor approaches 1.
+
+Our analysis of the recurrence equations for the expected total reward under an optimal policy offers theoretical insights into the structure of the problem. The approximate solution method we developed, using state space truncation and value iteration, provides a practical approach to solving these complex problems within computational constraints.
+
+The comparative analysis between the dynamic programming solution and Thompson Sampling across different discount factors yielded intriguing results. The DP approach consistently outperformed TS, the performance gap narrowed significantly (though TS outperforms DP significantly as $\gamma$ is very close to $1$), suggesting that simpler heuristics may be nearly optimal.
+
+These findings have important implications for real-world applications of bandit algorithms. The superior performance of Thompson Sampling in various settings suggests its potential as a robust default choice for many problems. However, the success of the DATS algorithm in dependent arm scenarios highlights the value of domain-specific adaptations. Furthermore, the near-optimality of heuristic methods indicates that computationally intensive exact solutions may not always be necessary in practice.
+
+Future research could explore several promising directions:
+\begin{itemize}
+    \item Developing more sophisticated dependency models and corresponding algorithms to handle complex real-world scenarios.
+    \item Investigating the theoretical properties of the Dependency-Aware Thompson Sampling algorithm and deriving bounds on its regret.
+    \item Improve the accuracy and efficiency of the DP algorithm under the circumstances where the discount factor approaches 1.
+    \item Exploring the application of these algorithms to specific domains such as online advertising, clinical trials, or recommendation systems.
+\end{itemize}
+
+In conclusion, this study advances our understanding of bandit algorithms' behavior across various settings and parameter ranges. By rigorously comparing classical and Bayesian approaches, we have provided insights that can guide algorithm selection and design in practical applications. As sequential decision-making problems continue to grow in importance across numerous fields, the insights gained from this work contribute to the ongoing development of efficient and effective reinforcement learning strategies.
+
+\newpage
+\section{Contributions of Team Members}
+\begin{itemize}
+    \item \textbf{Vuong An Thuy:} Part I, Part II Problem 4 \& 5, LaTeX formatting, code formatting, and report writing.
+    \item \textbf{Luc Trieu:} Part II
+    \item \textbf{Pham Canh Nhien:} Emotional Value
+\end{itemize}
 
 \end{document}
