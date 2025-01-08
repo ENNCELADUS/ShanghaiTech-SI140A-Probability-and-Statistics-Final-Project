@@ -16,3 +16,4 @@
 \contentsline {subsection}{\numberline {3.5}Problem 5}{30}{subsection.3.5}%
 \contentsline {section}{\numberline {4}Conclusion}{32}{section.4}%
 \contentsline {section}{\numberline {5}Contributions of Team Members}{34}{section.5}%
+\contentsline {section}{\numberline {6}Appendix: PDF version of Jupyter Notebook}{35}{section.6}%
